@@ -9,13 +9,15 @@
 class Command
 {
     protected $command_map = [
-        'tar' => 'tar -zxvf',
-        'untar' => 'tar -zcvf'
+        'cd' => 'cd %s',
+        'tar' => 'tar -zxvf %s',
+        'untar' => 'tar -zcvf %s'
     ];
 
-    protected function execute($command){
+    protected function execute($command, $arguments){
         $real_command = $this->getRealCommand($command);
-        return shell_exec($real_command);
+        var_dump(vsprintf($real_command, $arguments));
+        return shell_exec(vsprintf($real_command, $arguments));
     }
 
     public function getRealCommand($command){

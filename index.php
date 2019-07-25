@@ -1,7 +1,7 @@
 <?php
 require 'Shell.php';
 require 'Command.php';
+Shell::command('cd', '/etc/nginx');
 Shell::command('pwd');
-Shell::command('ll');
-$result = Shell::execute(1, 2);
+$result = Shell::execute();
 var_dump($result);

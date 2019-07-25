@@ -12,6 +12,8 @@ class Shell
 
     protected $command = array();
 
+    protected $arguments = array();
+
     public static function getInstance(){
         if(is_null(self::$shell)){
             self::$shell = new static();
@@ -19,12 +21,15 @@ class Shell
         return self::$shell;
     }
 
-    public static function command($command){
-        call_user_func([self::getInstance(), 'push'], $command);
+    public static function command(){
+        call_user_func([self::getInstance(), 'push'], func_get_args());
     }
 
-    public function push($command){
-        array_push($this->command, $command);
+    public function push($arguments){
+        $count = array_push($this->command, array_shift($arguments));
+        if(!empty($arguments)){
+            $this->arguments[$count - 1] = $arguments;
+        }
     }
 
     protected function execute(){
@@ -34,12 +39,16 @@ class Shell
         }elseif(!isset($this->command[$step_id])){
             return json_encode(['code' => 0, 'message' => '无效step_id', 'data' => []]);
         }
-        return Command::execute($this->command[$step_id]);
+//        return Command::execute($this->command[$step_id], $this->arguments[$step_id]);
+        $result = array();
+        foreach($this->command as $step_id => $command){
+            $result[] = Command::execute($this->command[$step_id], $this->arguments[$step_id]);
+        }
+        return $result;
     }
 
     public static function __callStatic($name, $arguments)
     {
-//        var_dump($name, $arguments);die;
         return call_user_func_array([self::getInstance(), $name], $arguments);
     }
 }
